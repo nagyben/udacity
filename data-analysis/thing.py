@@ -23,19 +23,31 @@ for engagement in daily_engagement:
     engagement['account_key'] = engagement['acct']
     del[engagement['acct']]
 
+
 # Remove udacity test accounts
+enrollments_no_test = list()
 for enrollment in enrollments:
-    if enrollment['is_udacity'] == 'True':
-        del enrollment
+    if enrollment['is_udacity'] != 'True':
+        enrollments_no_test.append(enrollment)
+
+enrollments = enrollments_no_test
+del enrollments_no_test
 
 # Fix data types
 for enrollment in enrollments:
     enrollment['cancel_date'] = None if enrollment['cancel_date'] == '' else dt.strptime(enrollment['cancel_date'], '%Y-%m-%d')
     enrollment['days_to_cancel'] = None if enrollment['days_to_cancel'] == '' else int(enrollment['days_to_cancel'])
-    enrollment['is_canceled'] = enrollment['is_canceled'] = 'True'
+    enrollment['is_canceled'] = enrollment['is_canceled'] == 'True'
     enrollment['is_udacity'] = enrollment['is_udacity'] == 'True'
     enrollment['join_date'] = None if enrollment['join_date'] == '' else dt.strptime(enrollment['join_date'], '%Y-%m-%d')
 
 print enrollments[0]
 
+# Quiz : Refining the question
 paid_students = dict()
+
+for enrollment in enrollments:
+    if enrollment['days_to_cancel'] == None or enrollment['days_to_cancel'] > 7:
+        paid_students[enrollment['account_key']] = enrollment['join_date']
+
+print len(paid_students)
